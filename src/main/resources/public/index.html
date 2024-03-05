@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Forms</title>
+    <title>Form</title>
+    <link rel="stylesheet" href="index.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <form action="/hello">
-      <h1>Sine</h1>
+    <form action="/logfacade">
+      <h1>Login</h1>
       <label for="msg">Message:</label>
-      <br />
       <input type="text" id="msg" name="msg" placeholder="write a message..." />
       <br />
       <input type="button" value="Submit" onclick="login()" />
     </form>
     <div id="jsonmsg"></div>
 
+    <script src="index.js"></script>
   </body>
 </html>
