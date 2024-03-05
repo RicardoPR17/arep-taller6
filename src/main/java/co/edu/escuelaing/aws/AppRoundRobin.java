@@ -8,7 +8,7 @@ public class AppRoundRobin {
 
     private static final String LOG_SERVICE_URL = "http://localhost:5000/logfacade";
     public static void main(String[] args) {
-        RemoteLogServiceInvoker invoke = new RemoteLogServiceInvoker(LOG_SERVICE_URL);
+        RemoteLogServiceInvoker invoke = new RemoteLogServiceInvoker(new String[]{LOG_SERVICE_URL});
         port(getPort());
         staticFiles.location("/public");
         get("/logservicefacade", (req, res) -> {
