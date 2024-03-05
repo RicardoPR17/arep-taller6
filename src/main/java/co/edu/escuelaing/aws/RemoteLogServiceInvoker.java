@@ -8,14 +8,16 @@ import java.net.URL;
 
 public class RemoteLogServiceInvoker {
     private static final String USER_AGENT = "Mozilla/5.0";
-    private static String get_URL = "";
+    private static String[] get_URL = null;
+    private int instance = 0;
 
-    public RemoteLogServiceInvoker(String url) {
-        get_URL = url;
+    public RemoteLogServiceInvoker(String[] urls) {
+        get_URL = urls;
     }
 
     public String invoke(String... args) throws IOException {
-        URL obj = new URL(get_URL);
+        URL obj = new URL(get_URL[instance]);
+        getInstance();
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("User-Agent", USER_AGENT);
@@ -43,5 +45,13 @@ public class RemoteLogServiceInvoker {
         }
         System.out.println("GET DONE");
         return response.toString();
+    }
+
+    private void getInstance() {
+        if (this.instance == 2) {
+            this.instance = 0;
+        } else {
+            this.instance++;
+        }
     }
 }
