@@ -1,7 +1,7 @@
 # **Taller 6 - Patrones Arquitecturales**
 ### *Hecho por Ricardo Pulido Renteria*
 
-En este taller, se trabaja con Spark para crear un servidor sencillo en el cual se trabajen diferentes peticiones GET. Posteriormente, se procede a crear una imagen Docker del proyecto para poder ejecutarlo de forma virtualizada, verificar su funcionamiento y posteriormente ser publicado en Docker Hub.
+En este taller, se trabaja con Spark, Mongo y Docker para crear un servicio donde almacenar mensajes que sean enviados por los usuarios desde el navegador y mostrar los 10 más recientes. Para esto, se manejan 2 proyectos dentro de este repositorio donde se cuenta con un servicio de almacenamiento y consulta de mensajes y otro que expone el servicio web y actúa como balanceador de cargas usando RoundRobin.
 
 ## **Descarga y ejecución**
 
@@ -21,47 +21,137 @@ La ejecución de este proyecto requiere de:
 
 Para poder trabajar con el proyecto hay 2 opciones, descargarlo desde GitHub o descargar la imagen del proyecto de Docker Hub.
 
-#### GitHub
-Sí se descarga desde GitHub, primero se clona el repositorio en su máquina o puede descargarlo en formato zip. Luego, una vez acceda al directorio del proyecto, debe ejecutar el comando `mvn install` para descargar las dependencias del proyecto, ya sea desde la terminal de comandos o desde la terminal que le brinde el intérprete de código de su preferencia (VS Code, IntelliJ, NetBeans, etc).
+**_Nota:_** Ambas requieren de que tengas corriendo la aplicación de DockerHub.
 
-Para ejecutarlo, podrá hacerlo desde la terminal de comandos como se explica a continuación. O desde el intérprete de código de su elección, haciendo `run` o ejecutando el código de la clase _SparkWebServer_.
+### GitHub
+Sí se descarga desde GitHub, primero se clona el repositorio en su máquina con el comando
+```bash
+git clone https://github.com/RicardoPR17/arep-taller6.git
+```
+o puede descargarlo en formato zip y descomprimirlo. Luego, se deben ejecutar los siguientes comandos:
+  1. Acceder al directorio del proyecto usando el comando 
+```bash
+cd arep-taller6
+```
+  2. Una vez dentro del directorio del proyecto, se ejecuta el siguiente comando para generar la carpeta _target_.
+```bash
+mvn clean install
+```
+  4. Contruimos las imágenes de Docker necesarias con los comandos
+    
+```bash
+docker build -t roundrobin:latest ./roundRobin
+docker build -t logservice:latest ./logService
+```
 
+### Docker Hub
 
-- **_Ejecución usando terminal de comandos_**
+En este caso, tenemos que descargar mínimo las imágenes de RoundRobin y de LogService de DockerHub, la de mongo es opcional puesto que con el _docker-compose_ será cargada a tu entorno de forma automática. Dicho esto, para bajar las imágenes mencionadas se usan los comandos
+
+```bash
+docker pull ricardopr17/arep-taller6:roundrobin
+docker pull ricardopr17/arep-taller6:logservice
+```
+
+Para ajustar los nombres para el _docker-compose_ en caso de no querer modificarlo, podemos ejecutar los siguientes comandos para hacer un tag diferente
+
+```bash
+docker tag ricardopr17/arep-taller6:roundrobin roundrobin
+docker tag ricardopr17/arep-taller6:logservice logservice
+```
+
+Con esto, según el camino que se haya decidido, tendríamos todo listo para ejecutar la aplicación.
+
+## **Ejecución**
+
+Para la ejecución, vamos a utilizar el siguiente _docker-compose.yml_
+
+```yaml
+version: "1"
+
+services:
+  db:
+    image: mongo:3.6.1
+    container_name: db
+    volumes:
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+    ports:
+      - 27017:27017
+    command: mongod
+  logs-1:
+    image: logservice:latest
+    ports:
+      - "5000:5000"
+    container_name: logs-1
+  logs-2:
+    image: logservice:latest
+    ports:
+      - "5001:5000"
+    container_name: logs-2
+  logs-3:
+    image: logservice:latest
+    ports:
+      - "5002:5000"
+    container_name: logs-3
+  round:
+    image: roundrobin:latest
+    ports:
+      - "47000:47000"
+    container_name: round
   
-  En caso de realizar la ejecución desde la terminal de comandos, se debe realizar lo siguiente:
-  1. Acceder al directorio del proyecto usando el comando `cd arep-taller6`.
-  2. Una vez dentro del directorio del proyecto, se ejecuta el comando `mvn clean install` para generar la carpeta _target_.
-  3. Desde la terminal, ejecutamos el comando `java -cp "target/classes;target/dependency/*" co.edu.escuelaing.sparkdockerdemolive.SparkWebServer`.
-     1. **Nota:** En caso de ejecutarse en Mac o Linux, cambiar el ; por :, es decir el comando sería `java -cp "target/classes:target/dependency/*" co.edu.escuelaing.sparkdockerdemolive.SparkWebServer`.
-  4. Listo, el servidor web estará corriendo y verás un mensaje diciendo que el servidor ya inició.
 
-#### Docker Hub
+volumes:
+  mongodb:
+  mongodb_config:
+```
 
-Primero, se descarga la imagen de Docker usando el comando `docker pull ricardopr17/firstsparkwebapprepo:latest` que nos traerá la versión más reciente. Hecho esto, podemos crear un contenedor donde ejecutar nuestro contenedor donde indicaremos el puerto físico donde acceder al servicio que ofrece y el puerto que se relaciona en el contenedor, en este caso usaremos el puerto físico 34000 y el comando es el siguiente `docker run -d -p 34000:47000 --name taller5-Ricardo ricardopr17/firstsparkwebapprepo:latest`.
+**_Nota:_** En caso de no cambiar los tags de las imágenes, es solo hacer el cambio. Por ejemplo: logservice:latest por ricardopr17/arep-taller6:logservice
+
+Ahora, creamos los contenedores y la red necesaria con el comando
+```bash
+docker-compose up -d
+```
+
+Con esto, se crearán todos los contenedores necesarios tanto para el LogService (que serán 3), para RoundRobin y para MongoDB.
 
 ## **Uso**
 
-Si descargamos el proyecto desde GitHub, accedemos desde la ruta http://localhost:4567/, o con el puerto que tengamos en nuestras variables de entorno najo el nombre de `PORT`. Si ejecutamos el contenedor de Docker, accedemos desde la ruta http://localhost:34000/. En ambos casos, se tienen las siguientes opciones:
-
-+ Seno con el ángulo en grados
-+ Coseno con el ángulo en grados
-+ Palíndromo
-+ Magnitud de un vector
-
-Todo eso es asequible mediante un formulario donde ver cada una de las opciones y obtener los resultados de cada una de ellas.
+Accedemos desde la ruta http://localhost:47000/index.html y veremos una página con un campo de texto. Aquí, podemos escribir cualquier mensaje que no esté separado por espacio y dar clic en el botón de _Submit_. Esto enviará nuestro mensaje al servicio y lo almacenará en la base de datos junto a la fecha y hora de recepción, acto seguido mostrará en pantalla un JSON con los 10 mensajes más recientes.
 
 
 ## **Diseño**
 
-Para este proyecto se manejan una clase que es _SparkWebServer_, siendo la clase principal donde se configuraron las peticiones con el framework de Spark. Aquí, se asigna el puerto donde corra el servidor, el directorio de donde tomar los archivos estáticos del servidor y las peticiones GET que se responderán.
+Se manejaron 2 proyectos, uno en el directorio _roundRobin_ y otro en el directorio _logService_.
 
-Adicional a ello, se definen los métodos de apoyo para la configuración y peticiones. Estos métodos son `getPort`, `checkPalindrome` y `vectorModule`.
+En _roundRobin_, se manejó tanto el servicio de front con el formulario y la conexión hacía las 3 instancias del LogService. Al manejar 3 instancias y por el nombre del directorio, se busca hacer un balanceador de cargas donde cada petición es enviada a una instancia diferente, yendo de la primera a la tercera y vuelve a la primera. Con esto, no se satura ninguna instancia con muchas peticiones seguidas.
 
 Con el método de `location` se asigna la carpeta dentro del directorio _resources_ donde buscar los archivos estáticos que sean solicitados. En este caso, la carpeta se llama _public_ y en ella tenemos los archivos del formulario junto a su respectiva hoja de estilos y scripts.
 
-En los scripts, se toma el contenido del formulario en particular para poder enviar la petición al servidor y obtener la respuesta para colocarla en el espacio de la respuesta indicado.
+Las respuestas recibidas por las instancias de LogService se presentan como
+
+```JSON
+{
+  "1": {
+    "date": "fecha de envío del mensaje",
+    "message": "mensaje enviado"
+  },
+  "2" : ...,
+   ⋮
+  "n" : ...
+}
+```
+
+Este "_n_" es porque, en caso de ser los primeros mensajes, no se encontrarán 10 mensajes en la base de datos, por lo cual muestra los existentes y se limita a 10 al presentarlos cumpliendo siempre con ser los más recientes.
+
+Por su parte, _logService_ maneja las funcionalidades de almacenamiento y consulta de registros. Está diseñado para conectarse a la base de datos no relacional de MongoDB de la red creada, allí almacenar en la colección "_logs_" de la base de datos "_taller6_" los documentos con el mensaje y el usuario, cumpliendo el esquema
+```JSON
+{
+  "message": "mensaje almacenado",
+  "date":  "fecha de envío"
+}
+```
 
 ## **Pruebas**
 
-Para estas pruebas, vamos a acceder a cada una de las rutas y luego mostrar en el formulario su funcionamiento. Haremos las mismas pruebas para varificar que se obtiene el mismo resultado. Para eso, se usará el navegador de Firefox y el apartado de red de su inspección de recursos.
+Para estas pruebas, vamos a acceder a la ruta http://localhost:47000/index.html usando el navegador de Firefox y veremos las peticiones realizadas en el apartado de red de su inspección de recursos.
