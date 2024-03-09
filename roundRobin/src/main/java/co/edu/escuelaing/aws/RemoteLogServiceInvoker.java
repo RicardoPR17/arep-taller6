@@ -15,7 +15,7 @@ public class RemoteLogServiceInvoker {
         getURL = urls;
     }
 
-    public String invoke(String... args) throws IOException {
+    public String invoke(String args) throws IOException {
         URL obj = new URL(getURL[instance] + args);
         updateInstance();
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -44,7 +44,7 @@ public class RemoteLogServiceInvoker {
             System.out.println("GET request not worked");
         }
         System.out.println("GET DONE");
-        return response.toString();
+        return response.toString().replace("[", "").replace("]", "");
     }
 
     private void updateInstance() {
