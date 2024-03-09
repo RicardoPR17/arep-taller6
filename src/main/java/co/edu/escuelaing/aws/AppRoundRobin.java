@@ -6,14 +6,17 @@ import static spark.Spark.staticFiles;
 
 public class AppRoundRobin {
 
-    private static final String LOG_SERVICE_URL = "http://localhost:5000/logfacade";
+    private static final String[] LOG_SERVICE_URL = { "http://localhost:5000/logfacade?message=",
+            "http://localhost:5001/logfacade?message=", "http://localhost:5002/logfacade?message=" };
+
     public static void main(String[] args) {
-        RemoteLogServiceInvoker invoke = new RemoteLogServiceInvoker(new String[]{LOG_SERVICE_URL});
+        RemoteLogServiceInvoker invoke = new RemoteLogServiceInvoker(LOG_SERVICE_URL);
         port(getPort());
         staticFiles.location("/public");
         get("/logservicefacade", (req, res) -> {
+            String message = req.queryParams("msg");
             res.type("application/json");
-            return invoke.invoke(args);
+            return invoke.invoke(message);
         });
     }
 
