@@ -20,6 +20,9 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
 
 public class LogService {
+
+    private static MongoClient client = new MongoClient("db", 27017);
+
     public static void main(String... args) {
         port(getPort());
         get("/logfacade", (req, res) -> {
@@ -36,8 +39,7 @@ public class LogService {
      * @return A string representation of the JSON with the 10 most recent documents
      */
     private static String getRecords(String newMsg) {
-        System.out.println(newMsg);
-        try (MongoClient client = new MongoClient("localhost", 27017)) {
+        try {
             MongoDatabase database = client.getDatabase("taller6");
             MongoCollection<Document> messages = database.getCollection("logs");
 

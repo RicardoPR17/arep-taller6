@@ -6,7 +6,8 @@ import static spark.Spark.staticFiles;
 
 public class AppRoundRobin {
 
-    private static final String[] LOG_SERVICE_URL = { "http://localhost:5000/logfacade?message=" };
+    private static final String[] LOG_SERVICE_URL = { "http://logs-1:5000/logfacade?message=",
+            "http://logs-2:5000/logfacade?message=", "http://logs-3:5000/logfacade?message=" };
 
     public static void main(String[] args) {
         RemoteLogServiceInvoker invoke = new RemoteLogServiceInvoker(LOG_SERVICE_URL);
