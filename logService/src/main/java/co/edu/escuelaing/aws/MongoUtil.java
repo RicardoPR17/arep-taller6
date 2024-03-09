@@ -9,7 +9,8 @@ public class MongoUtil {
     private static final String DATABASE_NAME = "taller6";
 
     public static MongoDatabase getDB() {
-        MongoClient client = MongoClients.create(CONNECTION_STRING);
-        return client.getDatabase(DATABASE_NAME);
+        try (MongoClient client = MongoClients.create(CONNECTION_STRING)) {
+            return client.getDatabase(DATABASE_NAME);
+        }
     }
 }
