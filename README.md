@@ -33,11 +33,15 @@ o puede descargarlo en formato zip y descomprimirlo. Luego, se deben ejecutar lo
 ```bash
 cd arep-taller6
 ```
-  2. Una vez dentro del directorio del proyecto, se ejecuta el siguiente comando para generar la carpeta _target_.
+  2. Una vez dentro del directorio del proyecto general, se necesita generar la carpeta _target_ en los 2 proyectos contenidos en el repositorio. Para esto, se ejecuta la siguiente serie de comandos
 ```bash
+cd logService
 mvn clean install
+cd ../roundRobin
+mvn clean install
+cd ..
 ```
-  4. Contruimos las imágenes de Docker necesarias con los comandos
+  3. Contruimos las imágenes de Docker necesarias con los comandos
     
 ```bash
 docker build -t roundrobin:latest ./roundRobin
@@ -155,3 +159,34 @@ Por su parte, _logService_ maneja las funcionalidades de almacenamiento y consul
 ## **Pruebas**
 
 Para estas pruebas, vamos a acceder a la ruta http://localhost:47000/index.html usando el navegador de Firefox y veremos las peticiones realizadas en el apartado de red de su inspección de recursos.
+
++ Primero, iniciamos el servicio ejecutando el comando de docker-componse mostrado anteriormente. Esto, nos creará un grupo de contenedores dentro de una misma red
+
+![Comando compose](<Imágenes README/comando compose.png>)
+
+![Docker compose](<Imágenes README/compose.png>)
+
++ Ahora, si accedemos a la ruta mencionada, veremos la siguiente página
+
+![Formulario](<Imágenes README/formulario.png>)
+
++ Enviando un primer mensaje diciendo AREP, veremos que solo habrá un elemento en el JSON de respuesta
+
+![Primer mensaje](<Imágenes README/mensaje1.png>)
+
++ Enviando otros mensajes, llegando a los 10 exactos, veremos que la respuesta los muestra correctamente y nuestro mensaje anterior es el último en la lista
+
+![10 mensajes](<Imágenes README/mensajes10.png>)
+
++ Si enviamos uno nuevo, en este caso el mensaje será Parcial, veremos que el primer de AREP dejará de aparecer en la respuesta
+
+![11 mensajes](<Imágenes README/mensaje11.png>)
+
++ Al revisar la base de datos, veremos que aún se encuentra almacenado el mensaje de AREP, pero por la condición de mostrar los 10 más recientes no es mostrado como respuesta del formulario
+
+![Muestra DB](<Imágenes README/muestraDB.png>)
+
+## **Despliegue en AWS**
+
+A continuación, se muestra la operación de este servicio de mensajes en una instancia EC2 de AWS:
+
