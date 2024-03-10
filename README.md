@@ -1,7 +1,8 @@
 # **Taller 6 - Patrones Arquitecturales**
 ### *Hecho por Ricardo Pulido Renteria*
+---
 
-En este taller, se trabaja con Spark, Mongo y Docker para crear un servicio donde almacenar mensajes que sean enviados por los usuarios desde el navegador y mostrar los 10 más recientes. Para esto, se manejan 2 proyectos dentro de este repositorio donde se cuenta con un servicio de almacenamiento y consulta de mensajes y otro que expone el servicio web y actúa como balanceador de cargas usando RoundRobin.
+En este taller, se trabaja con Spark, Mongo y Docker para crear un servicio donde almacenar mensajes que sean enviados por los usuarios desde el navegador y mostrar los 10 más recientes. Para esto, se manejan 2 proyectos dentro de este repositorio donde se cuenta con un servicio de almacenamiento y consulta de mensajes y otro que expone el servicio web y actúa como balanceador de cargas usando RoundRobin. Adicional a esto, se despliega el servicio en una instancia de EC2 de AWS.
 
 ## **Descarga y ejecución**
 
@@ -13,8 +14,8 @@ Para poder ejecutar este proyecto, el cual se ejecutará en tu ambiente local po
 La ejecución de este proyecto requiere de:
 - `Java (versión 17 o superior)`
 - `Maven (3.8.1 o superior)`
-- `Conexión a internet`
 - `Docker Desktop`
+- `Conexión a internet`
 
 
 ## **Instalación**
@@ -140,9 +141,9 @@ Las respuestas recibidas por las instancias de LogService se presentan como
     "date": "fecha de envío del mensaje",
     "message": "mensaje enviado"
   },
-  "2" : ...,
-   ⋮
-  "n" : ...
+  "2" : "...",
+  "⋮" : "⋮",
+  "n" : "..."
 }
 ```
 
@@ -188,5 +189,9 @@ Para estas pruebas, vamos a acceder a la ruta http://localhost:47000/index.html 
 
 ## **Despliegue en AWS**
 
-A continuación, se muestra la operación de este servicio de mensajes en una instancia EC2 de AWS:
+A continuación, se muestra la operación de este servicio de mensajes en una instancia EC2 de AWS: https://youtu.be/BXM2zG2eZE8
 
+## **Construido con**
+  - [Git](https://git-scm.com) - Control de versiones
+  - [Maven](https://maven.apache.org) - Administrador de dependencias
+  - [Docker](https://www.docker.com/) - Manejo de contenedores
