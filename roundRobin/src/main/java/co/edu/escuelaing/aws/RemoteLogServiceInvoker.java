@@ -47,6 +47,9 @@ public class RemoteLogServiceInvoker {
         return response.toString().replace("[", "").replace("]", "");
     }
 
+    /**
+     * Update the instance to send the next request
+     */
     private void updateInstance() {
         this.instance = (this.instance + 1) % getURL.length;
     }
